@@ -5,11 +5,11 @@ from platjam.utils import Screen, load
 
 
 class Obstacle:
-    def __init__(self, sprite: pg.Surface, scale_factor: int, max_width: int, max_height: int):
+    def __init__(self, sprite: pg.Surface, scale_factor: float, max_width: int, max_height: int):
         self.max_x = max_width - 16  # 16 is the image size
         self.max_y = max_height
         x = random.randint(0, max_width)
-        self.pos = [x, 0]
+        self.pos = pg.Vector2([x, 0])
         self.scale_factor = scale_factor  # the sprite gets scaled by this amount
         self.radius = 16 * self.scale_factor  # the actual radius is the sprite size multiplied by scale
         self.sprite = sprite
@@ -58,13 +58,14 @@ class ObstaclesDisplay:
                 return True
         return False
 
-    def update(self) -> None:
-        dtime = self.screen.clock.get_time()
+    def update(self, dtime: int) -> None:
         for obs in self.obstacles:
             obs.update(dtime=dtime)
             if obs.is_out_of_screen():
                 self.obstacles.remove(obs)
                 self.create_obstacle()
                 continue
+
+    def render(self) -> None:
+        for obs in self.obstacles:
             self.screen.blit(obs.sprite, obs.pos)
-        return True

@@ -10,27 +10,27 @@ import platjam.obstactles as obstacle
 
 
 TILE_SIZE = 32
-SCREEN_WIDTH = TILE_SIZE * 13
-screen = utils.Screen((TILE_SIZE * 13, TILE_SIZE * 19))
-running = True
+PLAYER_Y_OFFSET = 6
+screen = utils.Screen((20, 34), TILE_SIZE)
 
 # Class instances
-world = World(screen)
-# player = Player(screen)
+world = World(screen, TILE_SIZE, PLAYER_Y_OFFSET)
+player = Player(screen, world, PLAYER_Y_OFFSET)
 display_obstacles = obstacle.ObstaclesDisplay(screen)
 
 while screen.update():
     # update
     keys = pg.key.get_pressed()
+    dtime = screen.clock.get_time()
 
-    # player.update(keys, False)
-    display_obstacles.update()
+    player.update(keys, dtime)
+    display_obstacles.update(dtime)
 
     # render
     screen.fill(colors.BLUE)
 
-    world.render()
-    # player.render()
-
-    screen.clock.tick(60)
+    world.render(player.player_pos.y)
+    player.render()
     display_obstacles.render()
+
+    # screen.clock.tick(60)

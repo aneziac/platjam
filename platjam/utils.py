@@ -9,7 +9,7 @@ type Coordinate = pg.Vector2 | tuple[int, int]
 
 
 class Screen:
-    def __init__(self, dims: Coordinate, title: str = '', alpha: bool = False):
+    def __init__(self, dims: tuple[int, int], tile_size: int, title: str = '', alpha: bool = False):
         pg.init()
         pg.font.init()
         pg.mixer.init()
@@ -23,8 +23,12 @@ class Screen:
             elif "r" in sys.argv[1]:
                 flags |= pg.RESIZABLE
 
-        self.WIDTH, self.HEIGHT = dims
-        self._canvas = pg.display.set_mode(dims, flags)
+        self.WIDTH_TILES, self.HEIGHT_TILES = dims
+        self.WIDTH = self.WIDTH_TILES * tile_size
+        self.HEIGHT = self.HEIGHT_TILES * tile_size
+        self.TILE_SIZE = tile_size
+
+        self._canvas = pg.display.set_mode((self.WIDTH, self.HEIGHT), flags)
         if not alpha:
             self._canvas.set_alpha(None)
 
@@ -73,10 +77,11 @@ class Screen:
     def update(self) -> bool:
         self.events = pg.event.get()
         for event in self.events:
-            if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
+            if event.type == pg.QUIT or \
+               event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
                 return False
 
-        self.clock.tick()
+        self.clock.tick(60)  # limit to 60 FPS
         pg.display.flip()
         return True
 
