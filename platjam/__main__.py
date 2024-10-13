@@ -3,7 +3,6 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame as pg
 
 import platjam.utils as utils
-import platjam.colors as colors
 from platjam.world import *
 from platjam.player import *
 import platjam.obstactles as obstacle
@@ -27,8 +26,6 @@ while screen.update():
     display_obstacles.update(dtime)
 
     # render
-    screen.fill(colors.BLUE)
-
     world.render(player.player_pos.y)
     player.render()
     display_obstacles.render()
