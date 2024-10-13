@@ -22,11 +22,11 @@ class World:
         self.create_world_map()
 
     def create_world_map(self):
-        self.MAP = np.zeros((self.HEIGHT + 1, self.WIDTH))
-        self.MAP[-self.PLAYER_Y_OFFSET + 1:] = 1
+        self.MAP = np.zeros((self.HEIGHT + 5, self.WIDTH))
+        self.MAP[-self.PLAYER_Y_OFFSET:] = 1
         for _ in range(10):
-            self.MAP[-np.random.randint(7, 9), np.random.randint(1, 10)] = 1
-        print(self.MAP)
+            self.MAP[-np.random.randint(7, 9), np.random.randint(1, self.WIDTH)] = 1
+        # print(self.MAP)
 
     def render(self, player_y: float):
         player_y_block = int(player_y) // self.TILE_SIZE

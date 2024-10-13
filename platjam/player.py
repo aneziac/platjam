@@ -15,7 +15,7 @@ class Player:
             (self.world.HEIGHT - player_y_offset) * self.world.TILE_SIZE
         )
         self.player_velocity: float = 0.
-        self.player_acceleration: float = 0.2
+        self.player_acceleration: float = 0.002
         self.grounded = True
         self.speed = 7
 
@@ -26,17 +26,18 @@ class Player:
 
     def update(self, keys: list[bool], dtime: int):
         flags = self.detect_surroundings()
-        self.move(keys, dtime)
+        self.move(keys, dtime, flags)
         self.collide(flags)
-        self.player_pos.y -= 1
 
-    def move(self, keys: list[bool], dtime: int):
-        if not self.grounded:
+    def move(self, keys: list[bool], dtime: int, flags: int):
+        # print(self.player_velocity, self.grounded)
+        if not flags & 8:
             self.player_pos.y += self.player_velocity * dtime
             self.player_velocity += self.player_acceleration * dtime
 
-        if (keys[pg.K_w] or keys[pg.K_UP]) and self.grounded:
-            self.player_velocity = -2
+        if self.grounded and (keys[pg.K_w] or keys[pg.K_UP]):
+            self.player_pos.y -= 5
+            self.player_velocity = -0.8
             self.grounded = False
 
         if keys[pg.K_a] or keys[pg.K_LEFT]:
@@ -63,6 +64,11 @@ class Player:
                 self.world.MAP[self.tile_pos_before[1] - int(np.sin(np.pi / 2 * n)),
                                self.tile_pos_before[0] - int(np.cos(np.pi / 2 * n))]
             )
+            if n % 2 == 1:
+                wall_flags |= (1 << n) * bool(
+                    self.world.MAP[self.tile_pos_before[1] - int(np.sin(np.pi / 2 * n)),
+                                   self.tile_pos_before[0] + 1]
+                )
 
         return wall_flags
 
@@ -71,11 +77,15 @@ class Player:
         if wall_flags & 1:
             self.player_pos.x = max(self.player_pos.x, self.tile_pos_before[0] * self.world.TILE_SIZE)
         if wall_flags & 2:
-            self.player_pos.y = min(self.player_pos.y, (self.tile_pos_before[1] + 1) * self.world.TILE_SIZE - 1)
-        if wall_flags & 4:
-            self.player_pos.x = min(self.player_pos.x, (self.tile_pos_before[0] + 1) * self.world.TILE_SIZE - 1)
-        if wall_flags & 8:
             self.player_pos.y = max(self.player_pos.y, self.tile_pos_before[1] * self.world.TILE_SIZE)
+        if wall_flags & 4:
+            self.player_pos.x = min(self.player_pos.x, self.tile_pos_before[0] * self.world.TILE_SIZE)
+        if wall_flags & 8:
+            self.player_pos.y = min(self.player_pos.y, self.tile_pos_before[1] * self.world.TILE_SIZE)
+            if not self.grounded:
+                self.player_velocity = 0
+                self.grounded = True
 
     def render(self):
-        self.screen.circle(pg.Vector2(self.player_pos.x, self.screen_y_pos), 2, colors.PURPLE)
+        self.screen.rect(pg.Vector2(self.player_pos.x, self.screen_y_pos), (32, 32), colors.PURPLE)
+        # self.screen.circle(pg.Vector2(self.player_pos.x, self.screen_y_pos), 2, colors.PURPLE)
