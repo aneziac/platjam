@@ -6,6 +6,7 @@ import platjam.utils as utils
 import platjam.colors as colors
 from platjam.world import *
 from platjam.player import *
+import platjam.obstactles as obstacle
 
 
 TILE_SIZE = 32
@@ -15,13 +16,15 @@ running = True
 
 # Class instances
 world = World(screen)
-player = Player(screen)
+# player = Player(screen)
+display_obstacles = obstacle.ObstaclesDisplay(screen)
 
 while screen.update():
     # update
     keys = pg.key.get_pressed()
 
     player.update(keys, False)
+    display_obstacles.update()
 
     # render
     screen.fill(colors.BLUE)
@@ -30,3 +33,4 @@ while screen.update():
     player.render()
 
     screen.clock.tick(60)
+    display_obstacles.render()
