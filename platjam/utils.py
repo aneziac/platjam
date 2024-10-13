@@ -47,13 +47,13 @@ class Screen:
         if center:
             text_size = font.size(text)
             location = (location[0] + (text_size[0] // 2),
-                        location[1] + (text_size[1] // 2 ))
+                        location[1] + (text_size[1] // 2))
         self._canvas.blit(rendered_text, location)
 
     def circle(self, location: Coordinate, radius: int, color: pg.Color):
         if self.is_onscreen(location, radius):
-            gfxdraw.aacircle(self._canvas, location[0], location[1], radius, color)
-            gfxdraw.filled_circle(self._canvas, location[0], location[1], radius, color)
+            gfxdraw.aacircle(self._canvas, int(location[0]), int(location[1]), radius, color)
+            gfxdraw.filled_circle(self._canvas, int(location[0]), int(location[1]), radius, color)
 
     def rect(self, location: Coordinate, dims: Coordinate, color: pg.Color):
         gfxdraw.box(self._canvas, (location, dims), color)
