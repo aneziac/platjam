@@ -32,7 +32,6 @@ class Player:
         self.collide(flags)
 
     def move(self, keys: list[bool], dtime: int, flags: int):
-        # print(self.player_velocity, self.grounded)
         if not flags & 8:
             self.player_pos.y += self.player_velocity * dtime
             self.player_velocity += self.player_acceleration * dtime
@@ -68,7 +67,6 @@ class Player:
                                (self.tile_pos_before[0] - int(np.cos(np.pi / 2 * n)) % self.world.WIDTH)]
             )
             if self.world.TILE_SIZE - 11 > self.player_pos.x % self.world.TILE_SIZE > 11 and n % 2 == 1:
-                print(self.player_pos.x)
                 wall_flags |= (1 << n) * bool(
                     self.world.MAP[self.tile_pos_before[1] - int(np.sin(np.pi / 2 * n)),
                                    (self.tile_pos_before[0] + 1) % self.world.WIDTH]

@@ -19,11 +19,23 @@ class World:
         self.WIDTH = self.SCREEN_TILE_WIDTH
         self.HEIGHT = self.SCREEN_TILE_HEIGHT * 2
 
+        self.background = self.get_background()
+
         self.tilemap = self.get_tilemap(load('plain.png', 'tiles').convert())
 
         self.create_world_map()
 
-    def get_tilemap(self, tilemap: pg.Surface) -> list[pg.Surface]:
+    def get_background(self):
+        background = pg.Surface((self.screen.WIDTH, self.screen.HEIGHT))
+        image = load('background.png', 'tiles')
+        image_x, image_y = image.get_size()
+        for i in range(self.screen.WIDTH // image_x + 1):
+            for j in range(self.screen.HEIGHT // image_y + 1):
+                background.blit(image, (i * image_x, j * image_y))
+
+        return background
+
+    def get_tilemap(self, tilemap: pg.Surface) -> list[Optional[pg.Surface]]:
         result: list[Optional[pg.Surface]] = [None]
         for i in range(9):
             result.append(tilemap.subsurface(((i % 3) * 32, (i // 3) * 32, 32, 32)))
@@ -43,8 +55,9 @@ class World:
         # print(self.MAP)
 
     def render(self, player_y: float):
+        self.screen.blit(self.background, (0, 0))
+
         player_y_block = int(player_y) // self.TILE_SIZE
-        # print(player_y)
         y_tile_offset = player_y - player_y_block * self.TILE_SIZE
         for y in range(self.SCREEN_TILE_HEIGHT + 1):
             y_tile = y + player_y_block - self.SCREEN_TILE_HEIGHT + self.PLAYER_Y_OFFSET
