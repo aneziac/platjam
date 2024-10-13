@@ -1,5 +1,4 @@
 import pygame as pg
-import platjam.colors as colors
 from platjam.utils import Screen, load
 from platjam.world import World
 import numpy as np
