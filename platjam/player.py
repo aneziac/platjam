@@ -16,7 +16,7 @@ class Player:
         self.player_velocity: float = 0.
         self.player_acceleration: float = 0.002
         self.grounded = True
-        self.speed = 7
+        self.speed = 0.4
 
         self.icon = load('player.png', 'player')
 
@@ -37,18 +37,18 @@ class Player:
 
         if self.grounded and (keys[pg.K_w] or keys[pg.K_UP]):
             self.player_pos.y -= 5
-            self.player_velocity = -0.8
+            self.player_velocity = -0.75
             self.grounded = False
 
         if keys[pg.K_a] or keys[pg.K_LEFT]:
             if self.player_pos.x > -self.world.TILE_SIZE:
-                self.player_pos.x -= self.speed
+                self.player_pos.x -= self.speed * dtime
             else:
                 self.player_pos.x = self.screen.WIDTH
 
         if keys[pg.K_d] or keys[pg.K_RIGHT]:
             if self.player_pos.x < self.screen.WIDTH:
-                self.player_pos.x += self.speed
+                self.player_pos.x += self.speed * dtime
             else:
                 self.player_pos.x = 0
 
@@ -65,7 +65,7 @@ class Player:
                 self.world.MAP[self.tile_pos_before[1] - int(np.sin(np.pi / 2 * n)),
                                (self.tile_pos_before[0] - int(np.cos(np.pi / 2 * n)) % self.world.WIDTH)]
             )
-            if self.world.TILE_SIZE - 11 > self.player_pos.x % self.world.TILE_SIZE > 11 and n % 2 == 1:
+            if self.world.TILE_SIZE - 4 > self.player_pos.x % self.world.TILE_SIZE > 4 and n % 2 == 1:
                 wall_flags |= (1 << n) * bool(
                     self.world.MAP[self.tile_pos_before[1] - int(np.sin(np.pi / 2 * n)),
                                    (self.tile_pos_before[0] + 1) % self.world.WIDTH]
@@ -74,6 +74,7 @@ class Player:
         return wall_flags
 
     def collide(self, wall_flags: int) -> None:
+        print(self.player_velocity)
         # collision resolution based on bitmask flags set by detect_surroundings
         if wall_flags & 1:
             self.player_pos.x = max(self.player_pos.x, self.tile_pos_before[0] * self.world.TILE_SIZE)
@@ -84,8 +85,9 @@ class Player:
         if wall_flags & 8:
             self.player_pos.y = min(self.player_pos.y, self.tile_pos_before[1] * self.world.TILE_SIZE)
             if not self.grounded:
-                self.player_velocity = 0
                 self.grounded = True
+            if self.player_velocity != 0:
+                self.player_velocity = 0
 
     def render(self):
         self.screen.blit(self.icon, pg.Vector2(self.player_pos.x, self.screen_y_pos))

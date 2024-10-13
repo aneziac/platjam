@@ -50,9 +50,10 @@ class World:
         bottom[0, :] = np.tile(np.arange(1, 4), (self.WIDTH // 3 + 1))
 
         self.MAP[-self.PLAYER_Y_OFFSET:] = bottom[:, :self.WIDTH]
-        for _ in range(10):
-            self.MAP[-np.random.randint(7, 9), np.random.randint(1, self.WIDTH)] = 10
-        # print(self.MAP)
+
+        for _ in range(50):
+            self.MAP[-np.random.randint(7, 30), np.random.randint(0, self.WIDTH)] = 10
+        # print(self.MAP.shape)
 
     def render(self, player_y: float):
         self.screen.blit(self.background, (0, 0))
