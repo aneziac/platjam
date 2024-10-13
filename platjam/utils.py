@@ -46,9 +46,9 @@ class Screen:
         rendered_text = font.render(text, True, color)
         if center:
             text_size = font.size(text)
-
             location.x += text_size[0] // 2
             location.y += text_size[1] // 2
+
         self._canvas.blit(rendered_text, Screen.floor_loc(location))
 
     def circle(self, location: pg.Vector2, radius: int, color: pg.Color):
