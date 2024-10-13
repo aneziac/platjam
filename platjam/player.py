@@ -1,6 +1,6 @@
 import pygame as pg
 import platjam.colors as colors
-from platjam.utils import Screen
+from platjam.utils import Screen, load
 from platjam.world import World
 import numpy as np
 
@@ -18,6 +18,8 @@ class Player:
         self.player_acceleration: float = 0.002
         self.grounded = True
         self.speed = 7
+
+        self.icon = load('player.png', 'player')
 
     @property
     def tile_pos(self) -> tuple[int, int]:
@@ -87,5 +89,4 @@ class Player:
                 self.grounded = True
 
     def render(self):
-        self.screen.rect(pg.Vector2(self.player_pos.x, self.screen_y_pos), (32, 32), colors.PURPLE)
-        # self.screen.circle(pg.Vector2(self.player_pos.x, self.screen_y_pos), 2, colors.PURPLE)
+        self.screen.blit(self.icon, pg.Vector2(self.player_pos.x, self.screen_y_pos))

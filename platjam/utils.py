@@ -28,7 +28,9 @@ class Screen:
         self.HEIGHT = self.HEIGHT_TILES * tile_size
         self.TILE_SIZE = tile_size
 
-        self._canvas = pg.display.set_mode((self.WIDTH, self.HEIGHT), flags)
+        self._canvas = pg.Surface((self.WIDTH, self.HEIGHT))
+        self._screen = pg.display.set_mode((self.WIDTH * 1.8, self.HEIGHT * 1.8), flags)
+
         if not alpha:
             self._canvas.set_alpha(None)
 
@@ -83,6 +85,8 @@ class Screen:
 
         self.clock.tick(60)  # limit to 60 FPS
         pg.display.flip()
+
+        self._screen.blit(pg.transform.scale(self._canvas, self._screen.get_rect().size), (0, 0))
         return True
 
     @staticmethod
@@ -94,7 +98,7 @@ class Screen:
 
 # Load functions
 def load(file: str, extra_path: str = '', scale: Optional[pg.Vector2] = None) -> pg.Surface:
-    path = os.path.join(f'./platjam/assets/image/{extra_path}', file)
+    path = os.path.join(f'./platjam/sprites/{extra_path}', file)
     image = pg.image.load(path)
     if scale is None:
         return image

@@ -1,8 +1,8 @@
 import pygame as pg
 import numpy as np
 import sys
-from platjam.utils import Screen
-import platjam.colors as colors
+from typing import Optional
+from platjam.utils import Screen, load
 np.set_printoptions(threshold=sys.maxsize)
 
 
@@ -19,13 +19,27 @@ class World:
         self.WIDTH = self.SCREEN_TILE_WIDTH
         self.HEIGHT = self.SCREEN_TILE_HEIGHT * 2
 
+        self.tilemap = self.get_tilemap(load('plain.png', 'tiles').convert())
+
         self.create_world_map()
 
+    def get_tilemap(self, tilemap: pg.Surface) -> list[pg.Surface]:
+        result: list[Optional[pg.Surface]] = [None]
+        for i in range(9):
+            result.append(tilemap.subsurface(((i % 3) * 32, (i // 3) * 32, 32, 32)))
+        result.append(tilemap.subsurface((224, 160, 32, 32)))
+
+        return result
+
     def create_world_map(self):
-        self.MAP = np.zeros((self.HEIGHT + 5, self.WIDTH))
-        self.MAP[-self.PLAYER_Y_OFFSET:] = 1
+        self.MAP = np.zeros((self.HEIGHT + 5, self.WIDTH), dtype=int)
+
+        bottom = np.tile(np.arange(4, 10).reshape((2, 3)), (self.PLAYER_Y_OFFSET // 2, self.WIDTH // 3 + 1))
+        bottom[0, :] = np.tile(np.arange(1, 4), (self.WIDTH // 3 + 1))
+
+        self.MAP[-self.PLAYER_Y_OFFSET:] = bottom[:, :self.WIDTH]
         for _ in range(10):
-            self.MAP[-np.random.randint(7, 9), np.random.randint(1, self.WIDTH)] = 1
+            self.MAP[-np.random.randint(7, 9), np.random.randint(1, self.WIDTH)] = 10
         # print(self.MAP)
 
     def render(self, player_y: float):
@@ -39,4 +53,4 @@ class World:
                 tile = self.MAP[y_tile, x]
                 if tile != 0:
                     location = pg.Vector2((x * self.TILE_SIZE, y * self.TILE_SIZE - y_tile_offset))
-                    self.screen.rect(location, (self.TILE_SIZE, self.TILE_SIZE), colors.BLACK)
+                    self.screen.blit(self.tilemap[tile], location)

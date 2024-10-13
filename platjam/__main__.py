@@ -11,7 +11,7 @@ import platjam.obstactles as obstacle
 
 TILE_SIZE = 32
 PLAYER_Y_OFFSET = 6
-screen = utils.Screen((20, 34), TILE_SIZE)
+screen = utils.Screen((16, 28), TILE_SIZE)
 
 # Class instances
 world = World(screen, TILE_SIZE, PLAYER_Y_OFFSET)
