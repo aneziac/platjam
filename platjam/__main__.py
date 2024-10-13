@@ -1,20 +1,26 @@
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame as pg
 
 import platjam.utils as utils
 import platjam.colors as colors
+from platjam.world import *
 
 
-screen = utils.Screen((900, 600))
+TILE_SIZE = 32
+SCREEN_WIDTH = TILE_SIZE * 13
+screen = utils.Screen((TILE_SIZE * 13, TILE_SIZE * 19))
 running = True
 
 # Class instances
-# world = World()
-# player = Player()
+world = World(screen)
 
 while screen.update():
     # update
     keys = pg.key.get_pressed()
-    # player.update(keys)
+    # gameplayer.update(keys)
 
     # render
     screen.fill(colors.BLUE)
+
+    world.render()
