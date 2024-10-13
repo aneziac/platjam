@@ -22,9 +22,9 @@ class Player:
         self.icon = load('player.png', 'player')
 
     @property
-    def tile_pos(self) -> tuple[int, int]:
-        return (int(self.player_pos.x) // self.world.TILE_SIZE,
-                int(self.player_pos.y) // self.world.TILE_SIZE)
+    def tile_pos(self) -> list[int]:
+        return [int(self.player_pos.x) // self.world.TILE_SIZE,
+                int(self.player_pos.y) // self.world.TILE_SIZE]
 
     def update(self, keys: list[bool], dtime: int):
         flags = self.detect_surroundings()
@@ -43,7 +43,7 @@ class Player:
             self.grounded = False
 
         if keys[pg.K_a] or keys[pg.K_LEFT]:
-            if self.player_pos.x > 0:
+            if self.player_pos.x > -self.world.TILE_SIZE:
                 self.player_pos.x -= self.speed
             else:
                 self.player_pos.x = self.screen.WIDTH
@@ -60,16 +60,18 @@ class Player:
         wall_flags = 0
 
         self.tile_pos_before = self.tile_pos
+        self.tile_pos_before[0] = self.tile_pos_before[0] % self.world.WIDTH
 
         for n in range(4):
             wall_flags |= (1 << n) * bool(
                 self.world.MAP[self.tile_pos_before[1] - int(np.sin(np.pi / 2 * n)),
-                               self.tile_pos_before[0] - int(np.cos(np.pi / 2 * n))]
+                               (self.tile_pos_before[0] - int(np.cos(np.pi / 2 * n)) % self.world.WIDTH)]
             )
-            if n % 2 == 1:
+            if self.world.TILE_SIZE - 11 > self.player_pos.x % self.world.TILE_SIZE > 11 and n % 2 == 1:
+                print(self.player_pos.x)
                 wall_flags |= (1 << n) * bool(
                     self.world.MAP[self.tile_pos_before[1] - int(np.sin(np.pi / 2 * n)),
-                                   self.tile_pos_before[0] + 1]
+                                   (self.tile_pos_before[0] + 1) % self.world.WIDTH]
                 )
 
         return wall_flags
