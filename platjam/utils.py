@@ -5,8 +5,11 @@ import sys
 from typing import Optional
 
 
+type Coordinate = pg.Vector2 | tuple[int, int]
+
+
 class Screen:
-    def __init__(self, dims: pg.Vector2, title: str = '', alpha: bool = False):
+    def __init__(self, dims: tuple[int, int], tile_size: int, title: str = '', alpha: bool = False):
         pg.init()
         pg.font.init()
         pg.mixer.init()
@@ -20,8 +23,14 @@ class Screen:
             elif "r" in sys.argv[1]:
                 flags |= pg.RESIZABLE
 
-        self.WIDTH, self.HEIGHT = dims
-        self._canvas = pg.display.set_mode(dims, flags)
+        self.WIDTH_TILES, self.HEIGHT_TILES = dims
+        self.WIDTH = self.WIDTH_TILES * tile_size
+        self.HEIGHT = self.HEIGHT_TILES * tile_size
+        self.TILE_SIZE = tile_size
+
+        self._canvas = pg.Surface((self.WIDTH, self.HEIGHT))
+        self._screen = pg.display.set_mode((self.WIDTH * 1.8, self.HEIGHT * 1.8), flags)
+
         if not alpha:
             self._canvas.set_alpha(None)
 
@@ -43,21 +52,21 @@ class Screen:
         rendered_text = font.render(text, True, color)
         if center:
             text_size = font.size(text)
-
             location.x += text_size[0] // 2
             location.y += text_size[1] // 2
-        self._canvas.blit(rendered_text, Screen.floor_vector(location))
+
+        self._canvas.blit(rendered_text, Screen.floor_loc(location))
 
     def circle(self, location: pg.Vector2, radius: int, color: pg.Color):
         if self.is_onscreen(location, radius):
             gfxdraw.aacircle(self._canvas, int(location.x), int(location.y), radius, color)
             gfxdraw.filled_circle(self._canvas, int(location.x), int(location.y), radius, color)
 
-    def rect(self, location: pg.Vector2, dims: pg.Vector2, color: pg.Color):
-        gfxdraw.box(self._canvas, (Screen.floor_vector(location), dims), color)
+    def rect(self, location: pg.Vector2, dims: Coordinate, color: pg.Color):
+        gfxdraw.box(self._canvas, (Screen.floor_loc(location), dims), color)
 
-    def blit(self, image: pg.Surface, location: pg.Vector2):
-        self._canvas.blit(image, Screen.floor_vector(location))
+    def blit(self, image: pg.Surface, location: Coordinate):
+        self._canvas.blit(image, Screen.floor_loc(location))
 
     def is_onscreen(self, location: pg.Vector2, radius: int = 0) -> bool:
         in_width = location.x - radius > 0 and location.x + radius < self.WIDTH
@@ -70,21 +79,26 @@ class Screen:
     def update(self) -> bool:
         self.events = pg.event.get()
         for event in self.events:
-            if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
+            if event.type == pg.QUIT or \
+               event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
                 return False
 
-        self.clock.tick()
+        self.clock.tick(60)  # limit to 60 FPS
         pg.display.flip()
+
+        self._screen.blit(pg.transform.scale(self._canvas, self._screen.get_rect().size), (0, 0))
         return True
 
     @staticmethod
-    def floor_vector(vec: pg.Vector2) -> tuple[int, int]:
-        return (int(vec.x), int(vec.y))
+    def floor_loc(vec: Coordinate) -> tuple[int, int]:
+        if isinstance(vec, pg.Vector2):
+            return (int(vec.x), int(vec.y))
+        return vec
 
 
 # Load functions
 def load(file: str, extra_path: str = '', scale: Optional[pg.Vector2] = None) -> pg.Surface:
-    path = os.path.join(f'./platjam/assets/image/{extra_path}', file)
+    path = os.path.join(f'./platjam/sprites/{extra_path}', file)
     image = pg.image.load(path)
     if scale is None:
         return image
