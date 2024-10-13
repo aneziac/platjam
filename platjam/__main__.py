@@ -23,14 +23,14 @@ while screen.update():
     # update
     keys = pg.key.get_pressed()
 
-    player.update(keys, False)
+    # player.update(keys, False)
     display_obstacles.update()
 
     # render
     screen.fill(colors.BLUE)
 
     world.render()
-    player.render()
+    # player.render()
 
     screen.clock.tick(60)
     display_obstacles.render()
