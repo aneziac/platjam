@@ -23,6 +23,7 @@ while screen.update():
     dtime = screen.clock.get_time()
 
     player.update(keys, dtime)
+    world.update(dtime)
     display_obstacles.update(dtime)
 
     display_obstacles.obstactle_hits(player)
@@ -31,5 +32,3 @@ while screen.update():
     world.render(player.player_pos.y)
     player.render()
     display_obstacles.render()
-
-    # screen.clock.tick(60)

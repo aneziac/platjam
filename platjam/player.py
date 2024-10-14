@@ -81,7 +81,6 @@ class Player:
         return wall_flags
 
     def collide(self, wall_flags: int) -> None:
-        print(self.player_velocity)
         # collision resolution based on bitmask flags set by detect_surroundings
         if wall_flags & 1:
             self.player_pos.x = max(self.player_pos.x, self.tile_pos_before[0] * self.world.TILE_SIZE)
