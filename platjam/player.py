@@ -9,14 +9,12 @@ class Player:
         self.screen = screen
         self.world = world
         self.screen_y_pos = self.screen.HEIGHT - player_y_offset * self.world.TILE_SIZE
-        self.player_pos = pg.Vector2(
-            self.screen.WIDTH / 2,
-            (self.world.HEIGHT - player_y_offset) * self.world.TILE_SIZE
-        )
-        self.player_velocity: float = 0.
+        self.Y_OFFSET = player_y_offset
         self.player_acceleration: float = 0.002
-        self.grounded = True
-        self.speed = 7
+        self.speed = 0.4
+
+        self.reset()
+        self.initial_y: int = int(self.player_pos.y)
 
         self.icon = load('player.png', 'player')
 
@@ -29,6 +27,8 @@ class Player:
         flags = self.detect_surroundings()
         self.move(keys, dtime, flags)
         self.collide(flags)
+        self.dy = self.initial_y - int(self.player_pos.y)
+        self.screen_top_y: int = self.world.INITIAL_SCREEN_TOP - self.dy
 
     def move(self, keys: list[bool], dtime: int, flags: int):
         if not flags & 8:
@@ -37,20 +37,29 @@ class Player:
 
         if self.grounded and (keys[pg.K_w] or keys[pg.K_UP]):
             self.player_pos.y -= 5
-            self.player_velocity = -0.8
+            self.player_velocity = -0.75
             self.grounded = False
 
         if keys[pg.K_a] or keys[pg.K_LEFT]:
             if self.player_pos.x > -self.world.TILE_SIZE:
-                self.player_pos.x -= self.speed
+                self.player_pos.x -= self.speed * dtime
             else:
                 self.player_pos.x = self.screen.WIDTH
 
         if keys[pg.K_d] or keys[pg.K_RIGHT]:
             if self.player_pos.x < self.screen.WIDTH:
-                self.player_pos.x += self.speed
+                self.player_pos.x += self.speed * dtime
             else:
                 self.player_pos.x = 0
+
+    def reset(self):
+        self.player_pos = pg.Vector2(
+            self.screen.WIDTH / 2,
+            (self.world.HEIGHT - self.Y_OFFSET) * self.world.TILE_SIZE
+        )
+        self.player_velocity: float = 0.
+        self.grounded = True
+        self.dy: int = 0
 
     def detect_surroundings(self) -> int:
         #                                                         1 2 4 8
@@ -65,7 +74,7 @@ class Player:
                 self.world.MAP[self.tile_pos_before[1] - int(np.sin(np.pi / 2 * n)),
                                (self.tile_pos_before[0] - int(np.cos(np.pi / 2 * n)) % self.world.WIDTH)]
             )
-            if self.world.TILE_SIZE - 11 > self.player_pos.x % self.world.TILE_SIZE > 11 and n % 2 == 1:
+            if self.world.TILE_SIZE - 2 > self.player_pos.x % self.world.TILE_SIZE > 2 and n % 2 == 1:
                 wall_flags |= (1 << n) * bool(
                     self.world.MAP[self.tile_pos_before[1] - int(np.sin(np.pi / 2 * n)),
                                    (self.tile_pos_before[0] + 1) % self.world.WIDTH]
@@ -84,8 +93,9 @@ class Player:
         if wall_flags & 8:
             self.player_pos.y = min(self.player_pos.y, self.tile_pos_before[1] * self.world.TILE_SIZE)
             if not self.grounded:
-                self.player_velocity = 0
                 self.grounded = True
+            if self.player_velocity != 0:
+                self.player_velocity = 0
 
     def render(self):
         self.screen.blit(self.icon, pg.Vector2(self.player_pos.x, self.screen_y_pos))

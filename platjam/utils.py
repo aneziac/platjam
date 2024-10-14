@@ -29,7 +29,7 @@ class Screen:
         self.TILE_SIZE = tile_size
 
         self._canvas = pg.Surface((self.WIDTH, self.HEIGHT))
-        self._screen = pg.display.set_mode((self.WIDTH * 1.8, self.HEIGHT * 1.8), flags)
+        self._screen = pg.display.set_mode((self.WIDTH * .8, self.HEIGHT * .8), flags)
 
         if not alpha:
             self._canvas.set_alpha(None)
@@ -47,12 +47,12 @@ class Screen:
              location: Optional[pg.Vector2] = None,
              center: bool = False) -> None:
         if location is None:
-            location = pg.Vector2(self.WIDTH / 2, self.HEIGHT // 2)
+            location = pg.Vector2(self.WIDTH / 2, self.HEIGHT / 2)
 
         rendered_text = font.render(text, True, color)
         if center:
             text_size = font.size(text)
-            location.x += text_size[0] // 2
+            location.x -= text_size[0] // 2
             location.y += text_size[1] // 2
 
         self._canvas.blit(rendered_text, Screen.floor_loc(location))
@@ -64,6 +64,9 @@ class Screen:
 
     def rect(self, location: pg.Vector2, dims: Coordinate, color: pg.Color):
         gfxdraw.box(self._canvas, (Screen.floor_loc(location), dims), color)
+
+    def vline_to_bottom(self, location: tuple[int, int]):
+        gfxdraw.vline(self._canvas, *location, self.HEIGHT, (248,248,255))
 
     def blit(self, image: pg.Surface, location: Coordinate):
         self._canvas.blit(image, Screen.floor_loc(location))
@@ -109,7 +112,7 @@ def load(file: str, extra_path: str = '', scale: Optional[pg.Vector2] = None) ->
 # add mirror image argument
 def load_folder(folder_path: str, scale: Optional[pg.Vector2] = None):
     textures: list[pg.Surface] = []
-    for name in sorted(os.listdir(f'./platjam/assets/image/{folder_path}')):
+    for name in sorted(os.listdir(f'./platjam/sprites/{folder_path}')):
         if not name.startswith('.'):
             textures.append(load(name, folder_path, scale))
     return textures
