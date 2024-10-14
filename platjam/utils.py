@@ -29,7 +29,7 @@ class Screen:
         self.TILE_SIZE = tile_size
 
         self._canvas = pg.Surface((self.WIDTH, self.HEIGHT))
-        self._screen = pg.display.set_mode((self.WIDTH * 1.8, self.HEIGHT * 1.8), flags)
+        self._screen = pg.display.set_mode((self.WIDTH * .8, self.HEIGHT * .8), flags)
 
         if not alpha:
             self._canvas.set_alpha(None)
@@ -109,7 +109,7 @@ def load(file: str, extra_path: str = '', scale: Optional[pg.Vector2] = None) ->
 # add mirror image argument
 def load_folder(folder_path: str, scale: Optional[pg.Vector2] = None):
     textures: list[pg.Surface] = []
-    for name in sorted(os.listdir(f'./platjam/assets/image/{folder_path}')):
+    for name in sorted(os.listdir(f'./platjam/sprites/{folder_path}')):
         if not name.startswith('.'):
             textures.append(load(name, folder_path, scale))
     return textures
