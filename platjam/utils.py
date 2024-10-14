@@ -66,7 +66,7 @@ class Screen:
         gfxdraw.box(self._canvas, (Screen.floor_loc(location), dims), color)
 
     def vline_to_bottom(self, location: tuple[int, int]):
-        gfxdraw.vline(self._canvas, *location, self.HEIGHT, (255, 255, 255))
+        gfxdraw.vline(self._canvas, *location, self.HEIGHT, (248,248,255))
 
     def blit(self, image: pg.Surface, location: Coordinate):
         self._canvas.blit(image, Screen.floor_loc(location))

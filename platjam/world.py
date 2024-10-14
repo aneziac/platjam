@@ -85,7 +85,7 @@ class World:
         for i in range(12):
             tile = np.zeros((4, 4))
 
-            for _ in range(np.random.randint(0, 3)):
+            for _ in range(np.random.randint(1, 3)):
                 tile[np.random.randint(0, 4), np.random.randint(0, 4)] = 10
 
             generated_tileset[i] = tile
