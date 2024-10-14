@@ -34,8 +34,10 @@ class World:
         self.SCREEN_TILE_HEIGHT = int(screen.HEIGHT / self.TILE_SIZE)
 
         self.WIDTH = self.SCREEN_TILE_WIDTH
-        self.HEIGHT = self.SCREEN_TILE_HEIGHT * 2
+        self.HEIGHT = self.SCREEN_TILE_HEIGHT * 40
         self.INITIAL_SCREEN_TOP = (self.HEIGHT - self.SCREEN_TILE_HEIGHT) * self.TILE_SIZE
+
+        self.RANDOM_BLOCK_SIZE = self.WIDTH // 4
 
         self.background = self.get_background()
 
@@ -50,6 +52,7 @@ class World:
     def reset(self):
         self.milk_time = 0
         self.milk_level = (self.HEIGHT - 1) * self.TILE_SIZE
+        self.extra_milk_vel = 0
 
     def get_background(self):
         background = pg.Surface((self.screen.WIDTH, self.screen.HEIGHT))
@@ -77,13 +80,20 @@ class World:
 
         self.MAP[-self.PLAYER_Y_OFFSET:] = bottom[:, :self.WIDTH]
 
+        generated_tiles = np.random.randint(0, 5, size=self.HEIGHT * 4 // self.RANDOM_BLOCK_SIZE)
+
+        # for tile_i in generated_tiles:
+        #     pos = np.random.randint(0, (self.RANDOM_BLOCK_SIZE - 1) * self.RANDOM_BLOCK_SIZE)
+        #     self.MAP[]
+
         for _ in range(50):
             self.MAP[-np.random.randint(7, 30), np.random.randint(0, self.WIDTH)] = 10
         # print(self.MAP.shape)
 
     def update(self, dtime: int):
-        self.milk_time += dtime
+        self.milk_time += dtime + self.extra_milk_vel
         self.milk_level -= 1
+        self.extra_milk_vel += 0.01
 
     def render(self, player_pos: pg.Vector2, screen_top_y: int) -> bool:
         self.screen.blit(self.background, (0, 0))

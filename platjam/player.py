@@ -74,7 +74,7 @@ class Player:
                 self.world.MAP[self.tile_pos_before[1] - int(np.sin(np.pi / 2 * n)),
                                (self.tile_pos_before[0] - int(np.cos(np.pi / 2 * n)) % self.world.WIDTH)]
             )
-            if self.world.TILE_SIZE - 4 > self.player_pos.x % self.world.TILE_SIZE > 4 and n % 2 == 1:
+            if self.world.TILE_SIZE - 2 > self.player_pos.x % self.world.TILE_SIZE > 2 and n % 2 == 1:
                 wall_flags |= (1 << n) * bool(
                     self.world.MAP[self.tile_pos_before[1] - int(np.sin(np.pi / 2 * n)),
                                    (self.tile_pos_before[0] + 1) % self.world.WIDTH]
