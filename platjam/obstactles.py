@@ -29,8 +29,8 @@ class Obstacle:
         other_height: int = 30  # arbitrary! TODO
         other_y = self.world.TILE_SIZE * \
             (self.world.HEIGHT - (self.world.SCREEN_TILE_HEIGHT + self.world.PLAYER_Y_OFFSET)) - \
-            (player.init_y - player.player_pos.y)
-        print("hitbox", self.pos.y, "player", other_y)
+            (player.initial_y - player.player_pos.y)
+        # print("hitbox", self.pos.y, "player", other_y)
         #intersecting_y: bool = other_pos.y > self.hitbox[1] + \
         #    obstacle_height and (other_pos.y + other_height) < (self.hitbox[1] + obstacle_height)
         #if intersecting_y:

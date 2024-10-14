@@ -17,18 +17,27 @@ world = World(screen, TILE_SIZE, PLAYER_Y_OFFSET)
 player = Player(screen, world, PLAYER_Y_OFFSET)
 display_obstacles = ObstaclesDisplay(screen, world)
 
+game_over = False
 while screen.update():
-    # update
     keys = pg.key.get_pressed()
-    dtime = screen.clock.get_time()
 
-    player.update(keys, dtime)
-    world.update(dtime)
-    display_obstacles.update(dtime)
+    if not game_over:
+        # update
+        dtime = screen.clock.get_time()
 
-    display_obstacles.obstactle_hits(player)
+        player.update(keys, dtime)
+        world.update(dtime)
+        display_obstacles.update(dtime)
+
+        display_obstacles.obstactle_hits(player)
+
+    else:
+        if keys[pg.K_r]:
+            player.reset()
+            world.reset()
+            game_over = False
 
     # render
-    world.render(player.player_pos.y)
+    game_over = world.render(player.player_pos, player.screen_top_y)
     player.render()
     display_obstacles.render()

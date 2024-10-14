@@ -35,15 +35,21 @@ class World:
 
         self.WIDTH = self.SCREEN_TILE_WIDTH
         self.HEIGHT = self.SCREEN_TILE_HEIGHT * 2
+        self.INITIAL_SCREEN_TOP = (self.HEIGHT - self.SCREEN_TILE_HEIGHT) * self.TILE_SIZE
 
         self.background = self.get_background()
-        self.milk_time = 0
-        self.milk_level = (self.HEIGHT - 1) * self.TILE_SIZE
+
+        self.reset()
 
         self.tilemap = self.get_tilemap(load('plain.png', 'tiles').convert())
 
+        self.font = pg.font.Font('platjam/fonts/retro.ttf', 50)
         self.create_world_map()
         self.create_waves()
+
+    def reset(self):
+        self.milk_time = 0
+        self.milk_level = (self.HEIGHT - 1) * self.TILE_SIZE
 
     def get_background(self):
         background = pg.Surface((self.screen.WIDTH, self.screen.HEIGHT))
@@ -64,7 +70,7 @@ class World:
         return result
 
     def create_world_map(self):
-        self.MAP = np.zeros((self.HEIGHT + 5, self.WIDTH), dtype=int)
+        self.MAP = np.zeros((self.HEIGHT + 1, self.WIDTH), dtype=int)
 
         bottom = np.tile(np.arange(4, 10).reshape((2, 3)), (self.PLAYER_Y_OFFSET // 2, self.WIDTH // 3 + 1))
         bottom[0, :] = np.tile(np.arange(1, 4), (self.WIDTH // 3 + 1))
@@ -79,8 +85,9 @@ class World:
         self.milk_time += dtime
         self.milk_level -= 1
 
-    def render(self, player_y: float):
+    def render(self, player_pos: pg.Vector2, screen_top_y: int) -> bool:
         self.screen.blit(self.background, (0, 0))
+        player_x, player_y = player_pos.x, player_pos.y
 
         player_y_block = int(player_y) // self.TILE_SIZE
         y_tile_offset = player_y - player_y_block * self.TILE_SIZE
@@ -93,17 +100,24 @@ class World:
                     location = pg.Vector2((x * self.TILE_SIZE, y * self.TILE_SIZE - y_tile_offset))
                     self.screen.blit(self.tilemap[tile], location)
 
-        if self.milk_level < player_y + self.PLAYER_Y_OFFSET * self.TILE_SIZE
-
         milk = np.zeros(Wave.sample)
         for wave in self.waves:
             offset = int(self.milk_time * wave.velocity) % Wave.sample
             milk += np.roll(wave.y, offset)
 
-        # screen_height =
-
+        game_over = False
         for i in range(self.screen.WIDTH):
-            self.screen.vline_to_bottom((i, self.screen.HEIGHT - 70 - int(milk[i])))
+            milk_world_y = self.milk_level + int(milk[i])
+            milk_screen_y = milk_world_y - screen_top_y
+            if milk_screen_y > 0:
+                self.screen.vline_to_bottom((i, milk_screen_y))
+
+            if i == int(player_x):
+                if player_y > milk_world_y:
+                    self.screen.text('GAME OVER', (30, 144, 255), self.font, center=True)
+                    game_over = True
+
+        return game_over
 
     def create_waves(self):
         self.waves: list[Wave] = []

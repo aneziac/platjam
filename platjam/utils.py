@@ -47,12 +47,12 @@ class Screen:
              location: Optional[pg.Vector2] = None,
              center: bool = False) -> None:
         if location is None:
-            location = pg.Vector2(self.WIDTH / 2, self.HEIGHT // 2)
+            location = pg.Vector2(self.WIDTH / 2, self.HEIGHT / 2)
 
         rendered_text = font.render(text, True, color)
         if center:
             text_size = font.size(text)
-            location.x += text_size[0] // 2
+            location.x -= text_size[0] // 2
             location.y += text_size[1] // 2
 
         self._canvas.blit(rendered_text, Screen.floor_loc(location))
