@@ -20,8 +20,9 @@ class Obstacle:
         self.velocity_y = random.randint(3, 8) / 10  # vertical velocity between 0.3 and 0.8
         self.hitbox = (self.pos.x, self.pos.y, obstacle_width, obstacle_height)
 
-    def update(self, dtime: int) -> None:
-        self.pos.y += self.velocity_y * dtime
+    def update(self, dtime: int, player: Player) -> None:
+        dy = player.old_pos.y - player.player_pos.y
+        self.pos.y += self.velocity_y * dtime + dy
         self.hitbox = (self.pos.x, self.pos.y, obstacle_width, obstacle_height)
 
     def collides(self, player: Player) -> bool:
@@ -70,9 +71,9 @@ class ObstaclesDisplay:
                 return True
         return False
 
-    def update(self, dtime: int) -> None:
+    def update(self, dtime: int, player: Player) -> None:
         for obs in self.obstacles:
-            obs.update(dtime=dtime)
+            obs.update(dtime=dtime, player=player)
             if obs.is_out_of_screen():
                 self.obstacles.remove(obs)
                 self.create_obstacle()

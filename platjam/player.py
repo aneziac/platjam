@@ -31,6 +31,7 @@ class Player:
         self.screen_top_y: int = self.world.INITIAL_SCREEN_TOP - self.dy
 
     def move(self, keys: list[bool], dtime: int, flags: int):
+        self.old_pos = self.player_pos.copy()
         if not flags & 8:
             self.player_pos.y += self.player_velocity * dtime
             self.player_velocity += self.player_acceleration * dtime

@@ -53,6 +53,7 @@ class World:
         self.milk_time = 0
         self.milk_level = (self.HEIGHT - 1) * self.TILE_SIZE
         self.extra_milk_vel = 0
+        self.create_world_map()
 
     def get_background(self):
         background = pg.Surface((self.screen.WIDTH, self.screen.HEIGHT))
