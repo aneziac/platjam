@@ -28,8 +28,7 @@ while screen.update():
 
         player.update(keys, dtime)
         world.update(dtime)
-        display_obstacles.update(dtime)
-
+        display_obstacles.update(dtime, player)
     else:
         if keys[pg.K_r]:
             player.reset()
