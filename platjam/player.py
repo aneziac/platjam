@@ -17,6 +17,10 @@ class Player:
         self.player_acceleration: float = 0.002
         self.grounded = True
         self.speed = 7
+        self.init_y: int = int(self.player_pos.y)
+        self.dy: int = 0
+        self.real_y_pos: int = self.world.TILE_SIZE * \
+            (self.world.HEIGHT - (self.world.SCREEN_TILE_HEIGHT + self.world.PLAYER_Y_OFFSET))
 
         self.icon = load('player.png', 'player')
 
@@ -29,6 +33,9 @@ class Player:
         flags = self.detect_surroundings()
         self.move(keys, dtime, flags)
         self.collide(flags)
+        self.dy = self.init_y - self.player_pos.y
+        self.real_y_pos: int = self.world.TILE_SIZE * \
+            (self.world.HEIGHT - (self.world.SCREEN_TILE_HEIGHT + self.world.PLAYER_Y_OFFSET)) - self.dy
 
     def move(self, keys: list[bool], dtime: int, flags: int):
         if not flags & 8:
