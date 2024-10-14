@@ -25,18 +25,17 @@ class Obstacle:
         self.hitbox = (self.pos.x, self.pos.y, obstacle_width, obstacle_height)
 
     def collides(self, player: Player) -> bool:
-        # intersecting_x: bool = other_pos.x < self.pos.x + obstacle_width and other_pos.x > self.pos.x
-        other_height: int = 30  # arbitrary! TODO
-        other_y = self.world.TILE_SIZE * \
-            (self.world.HEIGHT - (self.world.SCREEN_TILE_HEIGHT + self.world.PLAYER_Y_OFFSET)) - \
-            (player.initial_y - player.player_pos.y)
-        # print("hitbox", self.pos.y, "player", other_y)
-        #intersecting_y: bool = other_pos.y > self.hitbox[1] + \
-        #    obstacle_height and (other_pos.y + other_height) < (self.hitbox[1] + obstacle_height)
-        #if intersecting_y:
-        #    print("intersectng on y?", intersecting_y)
-        #    exit(0)
-        return False  # intersecting_x and intersecting_y
+        intersecting_x: bool = player.player_pos.x < self.hitbox[0] + \
+            obstacle_width and player.player_pos.x > self.hitbox[0]
+        intersecting_x = intersecting_x or ((player.player_pos.x + self.world.TILE_SIZE) < self.hitbox[0] +
+                                            obstacle_width and (player.player_pos.x + self.world.TILE_SIZE) > self.hitbox[0])
+        player_height: int = self.world.TILE_SIZE  # arbitrary! TODO
+        this_y = self.hitbox[1] + player.screen_top_y
+        # print("hitbox", this_y, "player", player.player_pos.y)
+
+        intersecting_y: bool = player.player_pos.y < this_y + \
+            obstacle_height and (player.player_pos.y + player_height) > (this_y)
+        return intersecting_x and intersecting_y
 
     def is_out_of_screen(self) -> bool:
         return self.pos.y > self.max_y
@@ -49,7 +48,8 @@ class ObstaclesDisplay:
         self.max_obstacles = max_obstacles
         self.obstacles: list[Obstacle] = []
         self.load_sprites()
-        self.create_obstacle()
+        for _ in range(3):
+            self.create_obstacle()
 
     def create_obstacle(self) -> None:
         sprite: pg.Surface = self.get_random_sprite()
@@ -78,8 +78,13 @@ class ObstaclesDisplay:
                 self.create_obstacle()
                 continue
 
+    def reset(self):
+        self.obstacles.clear()
+        for _ in range(3):
+            self.create_obstacle()
+
     def render(self) -> None:
         for obs in self.obstacles:
             self.screen.blit(obs.sprite, obs.pos)
             # pg.draw.rect(self.screen._screen, (255, 0, 0), obs.hitbox, 2)
-            # self.screen.circle(obs.pos, obs.hitbox[2], (255, 0, 0))
+            # self.screen.circle(obs.pos, int(obs.hitbox[2] / 2), (255, 0, 0))
