@@ -101,7 +101,7 @@ class World:
         self.milk_level -= 2
         self.extra_milk_vel += 0.01
 
-    def render(self, player_pos: pg.Vector2, screen_top_y: int) -> bool:
+    def render(self, player_pos: pg.Vector2, screen_top_y: int, hit: bool) -> bool:
         self.screen.blit(self.background, (0, 0))
         player_x, player_y = player_pos.x, player_pos.y
 
@@ -129,7 +129,7 @@ class World:
                 self.screen.vline_to_bottom((i, milk_screen_y))
 
             if i == int(player_x):
-                if player_y > milk_world_y:
+                if player_y > milk_world_y or hit:
                     self.screen.text('GAME OVER', (30, 144, 255), self.font, center=True)
                     game_over = True
 
