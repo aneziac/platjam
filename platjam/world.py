@@ -34,7 +34,7 @@ class World:
         self.SCREEN_TILE_HEIGHT = int(screen.HEIGHT / self.TILE_SIZE)
 
         self.WIDTH = self.SCREEN_TILE_WIDTH
-        self.HEIGHT = self.SCREEN_TILE_HEIGHT * 40
+        self.HEIGHT = self.SCREEN_TILE_HEIGHT * 30
         self.INITIAL_SCREEN_TOP = (self.HEIGHT - self.SCREEN_TILE_HEIGHT) * self.TILE_SIZE
 
         self.RANDOM_BLOCK_SIZE = self.WIDTH // 4
@@ -80,19 +80,25 @@ class World:
 
         self.MAP[-self.PLAYER_Y_OFFSET:] = bottom[:, :self.WIDTH]
 
-        generated_tiles = np.random.randint(0, 5, size=self.HEIGHT * 4 // self.RANDOM_BLOCK_SIZE)
+        generated_tileset = {}
 
-        # for tile_i in generated_tiles:
-        #     pos = np.random.randint(0, (self.RANDOM_BLOCK_SIZE - 1) * self.RANDOM_BLOCK_SIZE)
-        #     self.MAP[]
+        for i in range(12):
+            tile = np.zeros((4, 4))
 
-        for _ in range(50):
-            self.MAP[-np.random.randint(7, 30), np.random.randint(0, self.WIDTH)] = 10
-        # print(self.MAP.shape)
+            for _ in range(np.random.randint(0, 3)):
+                tile[np.random.randint(0, 4), np.random.randint(0, 4)] = 10
+
+            generated_tileset[i] = tile
+
+        generated_tiles = np.random.randint(0, len(generated_tileset), size=((self.HEIGHT - 5) // self.RANDOM_BLOCK_SIZE) * self.RANDOM_BLOCK_SIZE)
+
+        for i, tile_i in enumerate(generated_tiles):
+            top_left_x, top_left_y = ((i % 4) * 4, (i // 4) * 4)
+            self.MAP[top_left_y:top_left_y + 4, top_left_x:top_left_x + 4] = generated_tileset[tile_i]
 
     def update(self, dtime: int):
         self.milk_time += dtime + self.extra_milk_vel
-        self.milk_level -= 1
+        self.milk_level -= 2
         self.extra_milk_vel += 0.01
 
     def render(self, player_pos: pg.Vector2, screen_top_y: int) -> bool:
